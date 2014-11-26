@@ -1,0 +1,35 @@
+{
+  "name": "ac-server-ctrl",
+  "description": "Assetto Corsa Server Control",
+  "version": "0.1.0",
+  "main": "./lib/server-handler.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/schmic/acCtrl.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.githubusercontent.com/schmic/acCtrl/master/LICENSE"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/schmic/acCtrl/issues"
+  },
+  "dependencies": {
+    "minimist": "*",
+    "config": "*",
+    "ini": "*",
+    "fs-sync": "*",
+    "event-stream": "*",
+    "fs-extra": "*"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "scripts": {
+    "start": "node acCtrl.js list",
+    "test": "node node_modules\\mocha\\bin\\mocha --reporter list"
+  }
+}
