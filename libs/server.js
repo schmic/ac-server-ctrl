@@ -35,7 +35,7 @@ module.exports = function (presetName) {
     var events = require('events');
     var eventEmitter = new events.EventEmitter();
 
-    var preset = require('./preset')(presetName);
+    var preset = env.getPreset(presetName);
     prepareServerPath(preset);
 
     return {
