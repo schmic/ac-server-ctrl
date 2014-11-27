@@ -46,12 +46,8 @@ exports.getPresetNames = function (filter) {
     return presetsMatched;
 };
 
-exports.getPresetName = function (presetPrefix) {
-    var presetsMatched = this.getPresetNames(presetPrefix);
-    if (presetsMatched.length === 0) {
-        return false;
-    }
-    return presetsMatched[0];
+exports.getPreset = function (presetName) {
+    return require('./preset')(presetName);
 };
 
 require('fs-extra').ensureDirSync(exports.getServersPath());
