@@ -14,7 +14,7 @@ function showHelp(msg, returnCode) {
     out('usage: acCtrl.js <action> [opts]\n',
         '\n',
         'actions:', 'list', 'start', '\n',
-        'opts:', '-h/--help', '-l/--list', '-p/--preset', '-v/--verbose');
+        'opts:', '-h/--help', '-l/--list', '-p/--preset');
 
     if (returnCode > 0)
         process.exit(returnCode)
@@ -30,12 +30,10 @@ var actions = {
     },
     'start': function () {
         console.log('action.start', 'argv:', argv);
-        var server = require('./libs/server');
-        server.init(cfg.getPresetName(argv.preset));
-        server.start();
+        require('./libs/server-ctrl').start(argv.preset);
         process.on( 'SIGINT', function() {
             console.log( "\nGracefully shutting down from SIGINT (Ctrl-C)" );
-            server.stop();
+            require('./libs/server-ctrl').stop(argv.preset);
         })
     }
 };
@@ -43,20 +41,12 @@ var actions = {
 var cfg = require('config');
 var argv = require('minimist')(process.argv.slice(2), {
     'string': ['preset'],
-    'boolean': ['verbose', 'help'],
+    'boolean': ['help'],
     'alias': {
         'p': 'preset',
-        'v': 'verbose',
         'h': 'help'
     }
 });
 var action = argv._.shift();
 
-if (actions.hasOwnProperty(action)) {
-    actions[action]();
-}
-else {
-    showHelp('Unknown/No action given, aborting', 1);
-    process.exit(1);
-}
-//EOF
+actions.hasOwnProperty(action) ? actions[action]() : showHelp('Unknown/No action given, aborting', 1);
