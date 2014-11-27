@@ -2,7 +2,7 @@
   "name": "ac-server-ctrl",
   "description": "Assetto Corsa Server Control",
   "version": "0.1.0",
-  "main": "./lib/server-handler.js",
+  "main": "./libs/server-ctrl.js",
   "private": true,
   "repository": {
     "type": "git",

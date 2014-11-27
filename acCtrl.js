@@ -22,14 +22,12 @@ function showHelp(msg, returnCode) {
 
 var actions = {
     'list': function () {
-        console.log('action.list', 'argv:', argv);
         console.log('==== Presets ====');
-        cfg.getPresetsNames('').some(function (preset) {
+        require('./libs/server-ctrl').env.getPresetNames('').some(function (preset) {
             console.log('>', preset);
         });
     },
     'start': function () {
-        console.log('action.start', 'argv:', argv);
         require('./libs/server-ctrl').start(argv.preset);
         process.on( 'SIGINT', function() {
             console.log( "\nGracefully shutting down from SIGINT (Ctrl-C)" );
