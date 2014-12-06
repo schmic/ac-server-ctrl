@@ -13,8 +13,9 @@ module.exports = function (server) {
         console.log('plugin.bestlap', options);
 
         request.post(options, function(err, resp, body) {
-            if(err) console.error(err);
-            console.log('request.post', err, resp, body);
+            if(err) {
+                console.error(err);
+            }
         });
     });
 };
