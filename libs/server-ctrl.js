@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var env = require('./env');
-var parser = require('./server-parser');
 
 var servers = {};
 
@@ -16,6 +15,10 @@ var writePidFile = function(server) {
     fs.writeFile(server.pidFile, server.proc.pid, function(err) {
         if(err) return console.error(err);
     });
+};
+
+var handleOutput = function(server) {
+    require('./server-parser').connect(server);
 };
 
 var spawnProcess = function(server) {
@@ -40,19 +43,18 @@ var start = function(presetName) {
 
     spawnProcess(server);
     writePidFile(server);
-    parser.connect(server);
+    handleOutput(server);
 
-    console.log('Started server', server.name, 'PID:', server.proc.pid);
     servers[presetName] = server;
+    console.log('Started server', server.name, 'PID:', server.proc.pid);
     return true;
 };
 
 var stop = function(presetName) {
     var server = servers[presetName];
-    // FIXME -- upload laptimes before exiting
     server.proc.kill();
-    console.log('Stopped server', server.name, 'PID:', server.proc.pid);
     delete servers[presetName];
+    console.log('Stopped server', server.name, 'PID:', server.proc.pid);
     return true;
 };
 
@@ -78,8 +80,10 @@ var isRunning = function(server) {
 };
 
 module.exports = {
+    // objects
     env: env,
     servers: servers,
+    // functions
     start: start,
     stop: stop,
     status: status,
