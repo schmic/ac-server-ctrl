@@ -22,7 +22,8 @@ ServerCtrl.prototype.start = function(presetName) {
 
     spawnProcess(server);
     writePidFile(server);
-    handleOutput(server);
+    connectParsers(server);
+    connectPlugins(server);
 
     this.servers[presetName] = server;
     console.log('Started server', server.name, 'PID:', server.proc.pid);
@@ -70,8 +71,12 @@ var handleExit = function(server) {
     });
 };
 
-var handleOutput = function(server) {
+var connectParsers = function(server) {
     require('./server-parser').connect(server);
+};
+
+var connectPlugins = function(server) {
+    require('./server-plugins').connect(server);
 };
 
 var writePidFile = function(server) {
