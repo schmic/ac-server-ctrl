@@ -1,64 +1,50 @@
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
+var events = require('events');
 var env = require('./env');
 
-var servers = {};
-
-var handleExit = function(server) {
-    fs.unlink(server.pidFile, function(err) {
-        if(err) return console.error(err);
-        console.log('Server process exit, removing pid file: ', server.pidFile);
-    });
+var ServerCtrl = function () {
+    events.EventEmitter.call(this);
 };
 
-var writePidFile = function(server) {
-    fs.writeFile(server.pidFile, server.proc.pid, function(err) {
-        if(err) return console.error(err);
-    });
-};
+util.inherits(ServerCtrl, events.EventEmitter);
 
-var handleOutput = function(server) {
-    require('./server-parser').connect(server);
-};
+ServerCtrl.prototype.servers = {};
+ServerCtrl.prototype.env = env;
 
-var spawnProcess = function(server) {
-    var args = [
-        '-c', path.join(server.workPath, 'server_cfg.ini'),
-        '-e', path.join(server.workPath, 'entry_list.ini')
-    ];
-
-    var proc = require('child_process').spawn(env.getServerExecutable(), args, { cwd: env.getACPath() });
-    proc.on('exit', handleExit.bind(null, server));
-    proc.on('SIGINT', handleExit.bind(null, server));
-    proc.on('uncaughtException', handleExit.bind(null, server));
-    server.proc = proc;
-};
-
-var start = function(presetName) {
-    var server = require('./server')(presetName);
-
-    if (isRunning(server)) {
-        throw new Error('Preset ' + preset.presetName + ' is already active');
+ServerCtrl.prototype.start = function(presetName) {
+    if (this.status(presetName) === 1) {
+        throw new Error('Preset ' + presetName + ' is already active');
     }
+
+    var server = require('./server')(presetName);
 
     spawnProcess(server);
     writePidFile(server);
     handleOutput(server);
 
-    servers[presetName] = server;
+    this.servers[presetName] = server;
     console.log('Started server', server.name, 'PID:', server.proc.pid);
+    this.emit('serverstart', server);
     return true;
 };
 
-var stop = function(presetName) {
-    var server = servers[presetName];
+ServerCtrl.prototype.stop = function(presetName) {
+    var server = this.servers[presetName];
     server.proc.kill();
-    delete servers[presetName];
+    delete this.servers[presetName];
     console.log('Stopped server', server.name, 'PID:', server.proc.pid);
+    this.emit('serverstop', server);
     return true;
 };
 
-var status = function(server) {
+ServerCtrl.prototype.status = function(presetName) {
+    var server = this.servers[presetName];
+
+    if(server === undefined) {
+        return 0;
+    }
     if (fs.existsSync(server.pidFile) === false) {
         return 0;
     }
@@ -75,18 +61,40 @@ var status = function(server) {
     }
 };
 
-var isRunning = function(server) {
-    return status(server) === 1;
+module.exports = exports = new ServerCtrl();
+
+var handleExit = function(server) {
+    fs.unlink(server.pidFile, function(err) {
+        if(err) return console.error(err);
+        console.log('Server process exit, removing pid file: ', server.pidFile);
+    });
 };
 
-module.exports = {
-    // objects
-    env: env,
-    servers: servers,
-    // functions
-    start: start,
-    stop: stop,
-    status: status,
-    isRunning: isRunning
+var handleOutput = function(server) {
+    require('./server-parser').connect(server);
 };
+
+var writePidFile = function(server) {
+    fs.writeFile(server.pidFile, server.proc.pid, function(err) {
+        if(err) return console.error(err);
+    });
+};
+
+var spawnProcess = function(server) {
+    var exe = env.getServerExecutable();
+    var args = [
+        '-c', path.join(server.workPath, 'server_cfg.ini'),
+        '-e', path.join(server.workPath, 'entry_list.ini')
+    ];
+    var opts = {
+        cwd: env.getACPath()
+    };
+
+    var proc = require('child_process').spawn(exe, args, opts);
+    proc.on('exit', handleExit.bind(null, server));
+    proc.on('SIGINT', handleExit.bind(null, server));
+    proc.on('uncaughtException', handleExit.bind(null, server));
+    server.proc = proc;
+};
+
 
