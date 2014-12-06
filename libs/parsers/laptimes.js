@@ -24,21 +24,23 @@ module.exports = function (server, line, cb) {
         var lapTime = toSeconds(matches.pop());
         var driver = driverByName(server.session, matches.pop());
 
-        if (server.session.laptimes[driver.GUID] == undefined) {
-            server.session.laptimes[driver.GUID] = {
-                "driver": driver.DRIVERNAME,
-                "GUID": driver.GUID,
-                "car": driver.MODEL,
-                "track": server.session.track,
-                "laptime": lapTime,
-                "time": new Date().toISOString(),
-                "session": server.session.type
-            };
-            server.emit('bestlap', server.session.laptimes[driver.GUID])
-        }
-        else if (server.session.laptimes[driver.GUID].time > lapTime) {
-            server.session.laptimes[driver.GUID].time = lapTime;
-            server.emit('bestlap', server.session.laptimes[driver.GUID])
+        var lap = {
+            "driver": driver.DRIVERNAME,
+            "GUID": driver.GUID,
+            "car": driver.MODEL,
+            "track": server.session.track,
+            "laptime": lapTime,
+            "time": new Date().toISOString(),
+            "session": server.session.type
+        };
+
+        var bestLap = server.session.laptimes[driver.GUID];
+
+        server.emit('lap', lap);
+
+        if (bestLap === undefined || bestLap.laptime > lap.laptime) {
+            server.session.laptimes[driver.GUID] = lap;
+            server.emit('bestlap', lap);
         }
     }
     cb(null, line);
