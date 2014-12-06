@@ -27,9 +27,9 @@ module.exports = function (server, line, cb) {
         if (server.session.laptimes[driver.GUID] == undefined) {
             server.session.laptimes[driver.GUID] = {
                 "driver": driver.DRIVERNAME,
+                "guid": driver.GUID,
                 "car": driver.MODEL,
                 "track": server.session.track,
-                "guid": driver.GUID,
                 "laptime": lapTime,
                 "time": new Date().toISOString(),
                 "session": server.session.type
