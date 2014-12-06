@@ -95,6 +95,7 @@ describe('Parser', function() {
             });
 
             require('../../libs/server-parser').connect(this.server);
+            require('../../libs/server-plugins').connect(this.server);
         });
     });
 });
