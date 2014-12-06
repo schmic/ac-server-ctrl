@@ -3,7 +3,7 @@ var assert = require('assert');
 
 describe('Parser', function() {
     before(function() {
-        this.server = require('../../libs/server')('testEventCCN12');
+        this.server = require('../../../libs/server')('testEventCCN12');
         this.stream = require('fs').createReadStream(path.join('test', 'acData', 'inputstreamCCN12'));
     });
     // after(function() {});
@@ -94,8 +94,7 @@ describe('Parser', function() {
                 }, 5000);
             });
 
-            require('../../libs/server-parser').connect(this.server);
-            require('../../libs/server-plugins').connect(this.server);
+            require('../../../libs/server-parser').connect(this.server);
         });
     });
 });

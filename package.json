@@ -23,7 +23,8 @@
     "ini": "*",
     "fs-sync": "*",
     "fs-extra": "*",
-    "event-stream": "*"
+    "event-stream": "*",
+    "request": "*"
   },
   "devDependencies": {
     "mocha": "*"
