@@ -2,12 +2,17 @@ var acRE = {};
 acRE.carEntry = /CAR_\d+\nSESSION_ID:(\d+)\nMODEL: (\w+) \(\d+\) .*\nDRIVERNAME: (.*)\nGUID:(\d+)/;
 acRE.addCar = /Adding car: SID:(\d+) name=(.+) model=(.+) skin=(.+) guid=(\d+)/;
 acRE.delCar = /Removing car sid:(\d+) name=(.+) model=([^ ]+) guid=(\d+)/;
-acRE.connectCar = /NEW CONNECTION from (.*)\nVERSION (\d+)\nGUID: (\d+)/
-acRE.disconnectCar = /Clean exit, driver disconnected:  (.*) []/
+acRE.connectCar = /NEW CONNECTION from (.*)\nVERSION (\d+)\nGUID: (\d+)/;
+acRE.pickupConnectCar = /Dispatching TCP message to (.*) \(\d+\) \[(.*) \[\]\]/;
+acRE.disconnectCar = /Clean exit, driver disconnected:  (.*) \[/;
+
+acRE.tcpBuffer = /TCP received  99 bytes \[(.*)\]/;
 
 var buffer = [];
 var bufferLines = '';
 var bufferMaxLength = 5;
+
+var lastGUID;
 
 var resetBuffer = function() {
     buffer = [];
@@ -40,7 +45,6 @@ module.exports = function (server, line, cb) {
     else if(acRE.addCar.test(line)) {
         var matches = line.match(acRE.addCar);
         var car = {
-            "SESSION_ID": matches[1],
             "MODEL": matches[3],
             "DRIVERNAME": matches[2],
             "GUID": matches[4]
@@ -54,6 +58,24 @@ module.exports = function (server, line, cb) {
         var matches = bufferLines.match(acRE.connectCar);
         server.session.drivers[matches[3]].connected = true;
         server.emit('connectcar', server.session.drivers[matches[3]]);
+    }
+
+    else if(acRE.tcpBuffer.test(line)) {
+        var matches = line.match(acRE.tcpBuffer);
+        lastGUID = matches.pop().split(' ').slice(6, 23).map(function(val) {
+            return Number(String.fromCharCode(val));
+        }).join('');
+    }
+
+    else if(acRE.pickupConnectCar.test(line)) {
+        var matches = line.match(acRE.pickupConnectCar);
+        var car = {
+            "DRIVERNAME": matches.pop(),
+            "MODEL": matches.pop(),
+            "GUID": lastGUID
+        };
+        server.session.drivers[car.GUID] = car;
+        server.emit('connectcar', car);
     }
 
     else if(acRE.disconnectCar.test(bufferLines)) {
