@@ -9,5 +9,6 @@ module.exports = function (server, line, cb) {
         server.log = require('fs').createWriteStream(getLogfileName(server.workPath), {flags: 'w+', encoding: 'UTF-8'});
     }
     server.log.write(line + "\n");
+
     cb(null, line);
 };

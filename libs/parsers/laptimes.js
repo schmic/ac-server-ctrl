@@ -43,5 +43,6 @@ module.exports = function (server, line, cb) {
             server.emit('bestlap', lap);
         }
     }
+
     cb(null, line);
 };

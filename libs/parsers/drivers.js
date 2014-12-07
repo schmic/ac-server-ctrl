@@ -6,7 +6,7 @@ acRE.connectCar = /NEW CONNECTION from (.*)\nVERSION (\d+)\nGUID: (\d+)/;
 acRE.pickupConnectCar = /Dispatching TCP message to (.*) \(\d+\) \[(.*) \[\]\]/;
 acRE.disconnectCar = /Clean exit, driver disconnected:  (.*) \[/;
 
-acRE.tcpBuffer = /TCP received  99 bytes \[(.*)\]/;
+acRE.tcpBuffer = /TCP received  \d+ bytes \[(\d+ 0 61 12 0 17 55.*)\]/;
 
 var buffer = [];
 var bufferLines = '';
@@ -62,9 +62,13 @@ module.exports = function (server, line, cb) {
 
     else if(acRE.tcpBuffer.test(line)) {
         var matches = line.match(acRE.tcpBuffer);
-        lastGUID = matches.pop().split(' ').slice(6, 23).map(function(val) {
+        var g = matches.pop().split(' ').slice(6, 23).map(function(val) {
             return Number(String.fromCharCode(val));
         }).join('');
+
+        if(g) {
+            lastGUID = g;
+        }
     }
 
     else if(acRE.pickupConnectCar.test(line)) {
@@ -74,8 +78,10 @@ module.exports = function (server, line, cb) {
             "MODEL": matches.pop(),
             "GUID": lastGUID
         };
-        server.session.drivers[car.GUID] = car;
-        server.emit('connectcar', car);
+        if(server.session.drivers[car.GUID] === undefined) {
+            server.session.drivers[car.GUID] = car;
+            server.emit('connectcar', car);
+        }
     }
 
     else if(acRE.disconnectCar.test(bufferLines)) {
