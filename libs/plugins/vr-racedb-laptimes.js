@@ -8,14 +8,13 @@ module.exports = function (server) {
     if(options.url === undefined) {
         return;
     }
-
-    server.on('bestlap', function(lap) {
+    server.on('lap', function(lap) {
         options.body = lap;
         require('request').post(options, function(err, resp, body) {
             if(err) {
                 console.error(err);
             }
-            console.log('bestlap.post', lap, '\n', body);
+            console.log('lap.post', lap, '\n', body);
         });
     });
 };
