@@ -3,10 +3,10 @@ acRE.carEntry = /CAR_\d+\nSESSION_ID:(\d+)\nMODEL: (\w+) \(\d+\) .*\nDRIVERNAME:
 acRE.addCar = /Adding car: SID:(\d+) name=(.+) model=(.+) skin=(.+) guid=(\d+)/;
 acRE.delCar = /Removing car sid:(\d+) name=(.+) model=([^ ]+) guid=(\d+)/;
 acRE.connectCar = /NEW CONNECTION from (.*)\nVERSION (\d+)\nGUID: (\d+)/;
-acRE.pickupConnectCar = /Dispatching TCP message to (.*) \(\d+\) \[(.*) \[\]\]/;
+acRE.connectTcpBuffer = /TCP received  \d+ bytes \[(\d+ 0 61 12 0 17 55.*)\]/;
+acRE.pickupConnectCar = /NEW PICKUP CONNECTION from.*\nVERSION \d+\nREAD WSTRING: \d+\n(.*)\nREQUESTED CAR: (.*)\*/;
 acRE.disconnectCar = /Clean exit, driver disconnected:  (.*) \[/;
 
-acRE.tcpBuffer = /TCP received  \d+ bytes \[(\d+ 0 61 12 0 17 55.*)\]/;
 
 var buffer = [];
 var bufferLines = '';
@@ -60,8 +60,8 @@ module.exports = function (server, line, cb) {
         server.emit('connectcar', server.session.drivers[matches[3]]);
     }
 
-    else if(acRE.tcpBuffer.test(line)) {
-        var matches = line.match(acRE.tcpBuffer);
+    else if(acRE.connectTcpBuffer.test(line)) {
+        var matches = line.match(acRE.connectTcpBuffer);
         var g = matches.pop().split(' ').slice(6, 23).map(function(val) {
             return Number(String.fromCharCode(val));
         }).join('');
@@ -71,11 +71,11 @@ module.exports = function (server, line, cb) {
         }
     }
 
-    else if(acRE.pickupConnectCar.test(line)) {
-        var matches = line.match(acRE.pickupConnectCar);
+    else if(acRE.pickupConnectCar.test(bufferLines)) {
+        var matches = bufferLines.match(acRE.pickupConnectCar);
         var car = {
-            "DRIVERNAME": matches.pop(),
             "MODEL": matches.pop(),
+            "DRIVERNAME": matches.pop(),
             "GUID": lastGUID
         };
         if(server.session.drivers[car.GUID] === undefined) {
