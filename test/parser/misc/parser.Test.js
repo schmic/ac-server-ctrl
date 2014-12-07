@@ -4,7 +4,7 @@ var assert = require('assert');
 describe('Parser', function() {
     before(function() {
         this.server = require('../../../libs/server')('ccn14-training');
-        this.stream = require('fs').createReadStream(path.join('test', 'acData', '20141207182530-server.log'));
+        this.stream = require('fs').createReadStream(path.join('test', 'acData', '20141207175036-server.log'));
     });
     // after(function() {});
     // beforeEach(function() {});
