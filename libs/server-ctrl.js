@@ -13,7 +13,7 @@ util.inherits(ServerCtrl, events.EventEmitter);
 ServerCtrl.prototype.servers = {};
 ServerCtrl.prototype.env = env;
 
-ServerCtrl.prototype.start = function(presetName) {
+ServerCtrl.prototype.start = function(presetName, cb) {
     if (this.status(presetName) === 1) {
         throw new Error('Preset ' + presetName + ' is already active');
     }
@@ -28,37 +28,50 @@ ServerCtrl.prototype.start = function(presetName) {
     this.servers[presetName] = server;
     console.log('Started server', server.name, 'PID:', server.proc.pid);
     this.emit('serverstart', server);
-    return true;
+
+    if(typeof cb === 'function') {
+        cb(presetName);
+    }
 };
 
-ServerCtrl.prototype.stop = function(presetName) {
+ServerCtrl.prototype.stop = function(presetName, cb) {
     var server = this.servers[presetName];
     server.proc.kill();
     delete this.servers[presetName];
     console.log('Stopped server', server.name, 'PID:', server.proc.pid);
     this.emit('serverstop', server);
-    return true;
+
+    if(typeof cb === 'function') {
+        cb(presetName);
+    }
 };
 
-ServerCtrl.prototype.status = function(presetName) {
+ServerCtrl.prototype.status = function(presetName, cb) {
     var server = this.servers[presetName];
+    var status;
 
     if(server === undefined) {
-        return 0;
+        status = 0;
     }
-    if (fs.existsSync(server.pidFile) === false) {
-        return 0;
+    else if (fs.existsSync(server.pidFile) === false) {
+        status = 0;
     }
-    if(server.proc === undefined) {
-        return 0;
+    else if(server.proc === undefined) {
+        status = 0;
     }
-    try {
-        process.kill(server.proc.pid, 0);
-        return 1;
+    else {
+        try {
+            process.kill(server.proc.pid, 0);
+            status = 1;
+        }
+        catch (e) {
+            handleExit(server);
+            status = -1;
+        }
     }
-    catch (e) {
-        handleExit(server);
-        return -1;
+
+    if(typeof cb === 'function') {
+        cb(presetName, status);
     }
 };
 
@@ -101,5 +114,3 @@ var spawnProcess = function(server) {
     proc.on('uncaughtException', handleExit.bind(null, server));
     server.proc = proc;
 };
-
-
