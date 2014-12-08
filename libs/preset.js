@@ -7,7 +7,7 @@ var getPresetPath = function(presetName) {
 };
 
 var readIni = function (filePath, fileName) {
-    var content = fs.readFileSync(path.join(filePath, fileName)).toString('UTF-8');
+    var content = fs.readFileSync(path.join(filePath, fileName)).toString('UTF-8').replace(';', ',');
     return require('ini').parse(content);
 };
 
@@ -20,11 +20,11 @@ var getTimeOfDay = function (sunAngle) {
 };
 
 var getCars = function (c) {
-    return c.split(';');
+    return c.split(',');
 };
 
 var getTracks = function (t) {
-    return t.split(';');
+    return t.split(',');
 };
 
 var asString = function (allowedValue) {
