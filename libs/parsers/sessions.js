@@ -75,6 +75,7 @@ module.exports = function(server, line, cb) {
         server.session.name = matches[1];
         server.session.index = parseInt(matches[2]);
         server.session.type = sessionTypes[matches[3]];
+        server.session.starttime = new Date().toISOString(),
         server.session.time = parseInt(matches[4]);
         server.session.laps = (matches[5]);
         server.session.laptimes = {};
