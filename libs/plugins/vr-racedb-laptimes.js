@@ -1,5 +1,5 @@
 var options = {
-    "url": require('config').VR.RaceDB.URL,
+    "url": require('config').get('vr.racedb.url'),
     "method": "POST",
     "json": true
 };

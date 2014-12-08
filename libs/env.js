@@ -5,7 +5,7 @@ var cfg = require('config');
 var isWindows = require('os').platform().match(/win/i);
 
 exports.getACPath = function() {
-    return cfg.get('AC.installpath');
+    return cfg.get('ac.path');
 };
 
 exports.getServerExecutable = function() {
