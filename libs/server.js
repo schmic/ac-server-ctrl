@@ -39,12 +39,13 @@ module.exports = function (presetName) {
     prepareServerPath(preset);
 
     return {
-        preset: preset,
-        name: preset.serverName,
+        on: eventEmitter.on,
+        emit: eventEmitter.emit,
         pidFile: getPidFile(preset),
         workPath: getServerPath(preset),
         log: undefined,
         proc: undefined,
+        preset: preset,
         session: {
             track: undefined,
             name: undefined,
@@ -55,9 +56,6 @@ module.exports = function (presetName) {
             laps: undefined,
             drivers : {},
             laptimes : {}
-        },
-        // events
-        on: eventEmitter.on,
-        emit: eventEmitter.emit
+        }
     }
 };
