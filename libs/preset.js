@@ -40,10 +40,21 @@ var asString = function (allowedValue) {
     }
 };
 
+function clearEntries(ini) {
+    // remove these ini.server entries
+    [   "UDP_PORT",
+        "TCP_PORT",
+        "HTTP_PORT",
+        "CLIENT_SEND_INTERVAL_HZ",
+        "PASSWORD" ].forEach(function(entry) {
+            delete ini.SERVER['entry'];
+        });
+    return ini;
+}
 function Preset(presetName) {
     var presetPath = getPresetPath(presetName);
     var ini = readIni(presetPath, 'server_cfg.ini');
-    var entries = readIni(presetPath, 'entry_list.ini');
+    //var entries = readIni(presetPath, 'entry_list.ini');
     return {
         presetPath: presetPath,
         presetName: presetName,
@@ -57,8 +68,8 @@ function Preset(presetName) {
         getAutoClutchAllowed: asString(ini.SERVER.AUTOCLUTCH_ALLOWED),
         hasPassword: ini.SERVER.PASSWORD !== undefined,
         hasPenalties : ini.SERVER.ALLOWED_TYRES_OUT < 4,
-        hasPickupMode: ini.SERVER.PICKUP_MODE_ENABLED === 1,
-        hasRegisterToLobby: ini.SERVER.REGISTER_TO_LOBBY === 1,
+        hasPickupMode: ini.SERVER.PICKUP_MODE_ENABLED == 1,
+        hasRegisterToLobby: ini.SERVER.REGISTER_TO_LOBBY == 1,
         hasTyreWear: ini.SERVER.TYRE_WEAR_RATE > 0,
         hasFuelUsage: ini.SERVER.FUEL_RATE > 0,
         hasDamage: ini.SERVER.DAMAGE_MULTIPLIER > 0,
@@ -72,14 +83,7 @@ function Preset(presetName) {
         qualifySession: ini.QUALIFY,
         hasRaceSession: ini.RACE !== undefined,
         raceSession: ini.RACE,
-        ini: ini,
-        entries: entries,
-        getEntryBy: function(attr, value) {
-            Object.keys(entries).forEach(function(k) {
-                if(entries[k][attr] == value)
-                    return entries[k];
-            });
-        }
+        ini: clearEntries(ini)
     };
 }
 

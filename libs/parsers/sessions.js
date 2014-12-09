@@ -32,17 +32,17 @@ module.exports = function(server, line, cb) {
     fillBuffer(line);
 
     if(acRE.dynamicTrackReset.test(line)) {
-        if(server.preset.ini.DYNAMIC_TRACK === undefined) {
+        if(server.preset.dynamicTrack === undefined) {
             return;
         }
         server.session.dynamictrack = {
-            "grip": server.preset.ini.DYNAMIC_TRACK.SESSION_START
+            "grip": server.preset.dynamicTrack.SESSION_START
         };
         server.emit('dynamictrack', server.session.dynamictrack);
     }
 
     if(acRE.dynamicTrackUpdate.test(line)) {
-        if(server.preset.ini.DYNAMIC_TRACK === undefined) {
+        if(server.preset.dynamicTrack === undefined) {
             return;
         }
 
@@ -51,9 +51,8 @@ module.exports = function(server, line, cb) {
         server.emit('dynamictrack', server.session.dynamictrack);
     }
 
-
-    // TODO -- test loop with multiple tracks
     if(acRE.track.test(line)) {
+        // TODO -- test loop with multiple tracks
         var matches = line.match(acRE.track);
         server.session.track = matches[1];
         server.emit('track', server.session.track);

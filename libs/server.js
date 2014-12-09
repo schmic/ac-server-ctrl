@@ -45,12 +45,12 @@ module.exports = function (presetName) {
         workPath: getServerPath(preset),
         log: undefined,
         proc: undefined,
-        // objects
         session: {
             track: undefined,
             name: undefined,
             index: undefined,
             type: undefined,
+            starttime: undefined,
             time: undefined,
             laps: undefined,
             drivers : {},
