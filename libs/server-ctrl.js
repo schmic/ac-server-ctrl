@@ -26,7 +26,7 @@ ServerCtrl.prototype.start = function(presetName, cb) {
     connectPlugins(server);
 
     this.servers[presetName] = server;
-    console.log('Started server', server.name, 'PID:', server.proc.pid);
+    console.log('Started server', server.preset.serverName, 'PID:', server.proc.pid);
     this.emit('serverstart', server);
 
     if(typeof cb === 'function') {
