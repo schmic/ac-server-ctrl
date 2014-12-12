@@ -7,7 +7,7 @@ var getPresetPath = function(presetName) {
 };
 
 var readIni = function (filePath, fileName) {
-    var content = fs.readFileSync(path.join(filePath, fileName)).toString('UTF-8').replace(';', ',');
+    var content = fs.readFileSync(path.join(filePath, fileName)).toString('UTF-8').replace(/;/g, ',');
     return require('ini').parse(content);
 };
 
