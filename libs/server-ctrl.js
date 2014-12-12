@@ -38,7 +38,7 @@ ServerCtrl.prototype.stop = function(presetName, cb) {
     var server = this.servers[presetName];
     server.proc.kill();
     delete this.servers[presetName];
-    console.log('Stopped server', server.name, 'PID:', server.proc.pid);
+    console.log('Stopped server', server.preset.serverName, 'PID:', server.proc.pid);
     this.emit('serverstop', server);
 
     if(typeof cb === 'function') {
