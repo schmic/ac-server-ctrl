@@ -26,7 +26,6 @@ module.exports = function (server, line, cb) {
 
         var lap = {
             "driver": driver.DRIVERNAME,
-            "GUID": driver.GUID,
             "car": driver.MODEL,
             "track": server.session.track,
             "laptime": lapTime,
