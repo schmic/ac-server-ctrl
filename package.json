@@ -26,11 +26,7 @@
     "event-stream": "*",
     "request": "*"
   },
-  "devDependencies": {
-    "mocha": "*"
-  },
   "scripts": {
-    "start": "node acCtrl.js list",
-    "test": "node node_modules\\mocha\\bin\\mocha --reporter list"
+    "start": "node acCtrl.js list"
   }
 }
