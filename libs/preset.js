@@ -61,6 +61,7 @@ function Preset(presetName) {
         serverName: ini.SERVER.NAME,
         cars: getCars(ini.SERVER.CARS),
         tracks: getTracks(ini.SERVER.TRACK),
+        trackConfig: ini.SERVER.CONFIG_TRACK,
         timeOfDay: getTimeOfDay(ini.SERVER.SUN_ANGLE),
         getTCAllowed: asString(ini.SERVER.TC_ALLOWED),
         getABSAllowed: asString(ini.SERVER.ABS_ALLOWED),
