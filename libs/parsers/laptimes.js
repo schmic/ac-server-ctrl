@@ -28,6 +28,7 @@ module.exports = function (server, line, cb) {
             "driver": driver.DRIVERNAME,
             "car": driver.MODEL,
             "track": server.session.track,
+            "trackConfig": server.session.trackConfig,
             "laptime": lapTime,
             "time": new Date().toISOString(),
             "session": server.session.type

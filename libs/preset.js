@@ -19,14 +19,6 @@ var getTimeOfDay = function (sunAngle) {
     return someDate.toLocaleTimeString();
 };
 
-var getCars = function (c) {
-    return c.split(',');
-};
-
-var getTracks = function (t) {
-    return t.split(',');
-};
-
 var asString = function (allowedValue) {
     switch(allowedValue) {
         case '0':
@@ -59,8 +51,9 @@ function Preset(presetName) {
         presetPath: presetPath,
         presetName: presetName,
         serverName: ini.SERVER.NAME,
-        cars: getCars(ini.SERVER.CARS),
-        tracks: getTracks(ini.SERVER.TRACK),
+        cars: ini.SERVER.CARS.split(','),
+        track: ini.SERVER.TRACK,
+        trackConfig: ini.SERVER.CONFIG_TRACK,
         timeOfDay: getTimeOfDay(ini.SERVER.SUN_ANGLE),
         getTCAllowed: asString(ini.SERVER.TC_ALLOWED),
         getABSAllowed: asString(ini.SERVER.ABS_ALLOWED),

@@ -9,6 +9,10 @@ module.exports = function (server) {
         return;
     }
     server.on('lap', function(lap) {
+        if(lap.trackConfig) {
+            lap.track += '-' + lap.trackConfig;
+            delete lap.trackConfig;
+        }
         options.body = lap;
         require('request').post(options, function(err, resp, body) {
             if(err) {

@@ -51,13 +51,6 @@ module.exports = function(server, line, cb) {
         server.emit('dynamictrack', server.session.dynamictrack);
     }
 
-    if(acRE.track.test(line)) {
-        // TODO -- test loop with multiple tracks
-        var matches = line.match(acRE.track);
-        server.session.track = matches[1];
-        server.emit('track', server.session.track);
-    }
-
     if(acRE.sessionChange.test(bufferLines)) {
         var matches = bufferLines.match(acRE.sessionChange);
 
@@ -78,6 +71,8 @@ module.exports = function(server, line, cb) {
         server.session.time = parseInt(matches[4]);
         server.session.laps = (matches[5]);
         server.session.laptimes = {};
+        server.session.track = server.preset.track;
+        server.session.trackConfig = server.preset.trackConfig;
         server.emit('nextsession', server.session);
 
         resetBuffer();
