@@ -18,7 +18,19 @@ ServerCtrl.prototype.start = function(presetName, cb) {
         throw new Error('Preset ' + presetName + ' is already active');
     }
 
-    var server = require('./server')(presetName);
+    try {
+        var server = require('./server')(presetName);
+    }
+    catch(e) {
+        switch(e.code) {
+            case 'ENOENT':
+                console.error('Preset', presetName, 'does not exist');
+                break;
+            default:
+                console.error(e);
+        }
+        return;
+    }
 
     spawnProcess(server);
     writePidFile(server);
