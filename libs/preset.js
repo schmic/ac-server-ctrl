@@ -49,7 +49,6 @@ function Preset(presetName) {
         presetName: presetName,
         serverName: ini.SERVER.NAME,
         cars: ini.SERVER.CARS.split(','),
-        maxCars: ini.SERVER.MAX_CLIENTS,
         track: ini.SERVER.TRACK,
         trackConfig: ini.SERVER.CONFIG_TRACK,
         timeOfDay: getTimeOfDay(ini.SERVER.SUN_ANGLE),
