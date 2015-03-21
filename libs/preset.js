@@ -33,14 +33,11 @@ var asString = function (allowedValue) {
 };
 
 function clearEntries(ini) {
-    // remove these ini.server entries
-    [   "UDP_PORT",
-        "TCP_PORT",
-        "HTTP_PORT",
-        "CLIENT_SEND_INTERVAL_HZ",
-        "PASSWORD" ].forEach(function(entry) {
-            delete ini.SERVER['entry'];
-        });
+    delete ini.SERVER.UDP_PORT;
+    delete ini.SERVER.TCP_PORT;
+    delete ini.SERVER.HTTP_PORT;
+    delete ini.SERVER.PASSWORD;
+    delete ini.SERVER.ADMIN_PASSWORD;
     return ini;
 }
 function Preset(presetName) {
@@ -52,6 +49,7 @@ function Preset(presetName) {
         presetName: presetName,
         serverName: ini.SERVER.NAME,
         cars: ini.SERVER.CARS.split(','),
+        maxCars: ini.SERVER.MAX_CLIENTS,
         track: ini.SERVER.TRACK,
         trackConfig: ini.SERVER.CONFIG_TRACK,
         timeOfDay: getTimeOfDay(ini.SERVER.SUN_ANGLE),
