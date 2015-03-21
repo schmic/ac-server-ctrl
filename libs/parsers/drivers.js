@@ -6,8 +6,10 @@ var acRE = {};
 
 // Sending first leaderboard to car: bmw_m3_e92_s1 (0) [Michael Scherer []]
 acRE.connectCar = /Sending first leaderboard to car: (.+) \((\d+)\) \[(.+) \[\]\]/;
-// TCP connection bmw_m3_e92_s1 (0) [Michael Scherer []] terminated
-acRE.disconnectCar = /TCP connection .* \((\d+)\) \[.*\] terminated/;
+
+// Clean exit, driver disconnected:  Gnomi Stra []
+// ResetCarResults, index: 12
+acRE.disconnectCar = /Clean exit, driver disconnected: .*\nResetCarResults, index: (\d+)/;
 
 var buffer = [];
 var bufferLines = '';
@@ -71,12 +73,13 @@ module.exports = function (server, line, cb) {
     }
 
     else if(acRE.disconnectCar.test(line)) {
-        var matches = line.match(acRE.disconnectCar);
+        var matches = bufferLines.match(acRE.disconnectCar);
 
         var car = server.session.drivers[matches[1]];
-        delete server.session.drivers[matches[1]];
-
         server.emit('disconnectcar', car);
+
+        delete server.session.drivers[matches[1]];
+        resetBuffer();
     }
 
     cb(null, line);
