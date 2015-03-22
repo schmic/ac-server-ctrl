@@ -34,12 +34,12 @@ module.exports = function (server, line, cb) {
             "session": server.session.type
         };
 
-        var bestLap = server.session.laptimes[driver.GUID];
+        var bestLap = server.session.laptimes[driver.SID];
 
         server.emit('lap', lap);
 
         if (bestLap === undefined || bestLap.laptime > lap.laptime) {
-            server.session.laptimes[driver.GUID] = lap;
+            server.session.laptimes[driver.SID] = lap;
             server.emit('bestlap', lap);
         }
     }
