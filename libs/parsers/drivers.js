@@ -9,7 +9,7 @@ acRE.connectCar = /Sending first leaderboard to car: (.+) \((\d+)\) \[(.+) \[\]\
 
 // Clean exit, driver disconnected:  Gnomi Stra []
 // ResetCarResults, index: 12
-acRE.disconnectCar = /Clean exit, driver disconnected: .*\nResetCarResults, index: (\d+)/;
+acRE.disconnectCar = /Clean exit, driver disconnected:.*\nResetCarResults, index: (\d+)/;
 
 var buffer = [];
 var bufferLines = '';
@@ -72,7 +72,7 @@ module.exports = function (server, line, cb) {
         server.emit('connectcar', car);
     }
 
-    else if(acRE.disconnectCar.test(line)) {
+    else if(acRE.disconnectCar.test(bufferLines)) {
         var matches = bufferLines.match(acRE.disconnectCar);
 
         var car = server.session.drivers[matches[1]];
