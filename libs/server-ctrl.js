@@ -14,10 +14,6 @@ ServerCtrl.prototype.servers = {};
 ServerCtrl.prototype.env = env;
 
 ServerCtrl.prototype.start = function(presetName, cb) {
-    if (this.status(presetName) === 1) {
-        throw new Error('Preset ' + presetName + ' is already active');
-    }
-
     try {
         var server = require('./server')(presetName);
     }
@@ -52,7 +48,6 @@ ServerCtrl.prototype.stop = function(presetName, cb) {
     delete this.servers[presetName];
     console.log('Stopped server', server.preset.serverName, 'PID:', server.proc.pid);
     this.emit('serverstop', server);
-
     if(typeof cb === 'function') {
         cb(presetName);
     }
@@ -97,7 +92,7 @@ var handleExit = function(server) {
 };
 
 var connectParsers = function(server) {
-    require('./server-parser').connect(server);
+    require('./server-parsers').connect(server);
 };
 
 var connectPlugins = function(server) {
