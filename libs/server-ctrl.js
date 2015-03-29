@@ -14,6 +14,12 @@ ServerCtrl.prototype.servers = {};
 ServerCtrl.prototype.env = env;
 
 ServerCtrl.prototype.start = function(presetName, cb) {
+    var status = this.status(presetName);
+    if(status === 1) {
+        console.warn('Preset', presetName, 'already running');
+        return typeof cb === 'function' ? cb(presetName, status) : status;
+    }
+
     try {
         var server = require('./server')(presetName);
     }
@@ -43,14 +49,21 @@ ServerCtrl.prototype.start = function(presetName, cb) {
 };
 
 ServerCtrl.prototype.stop = function(presetName, cb) {
+    var status = this.status(presetName);
+
+    if(status !== 1) {
+        console.warn('Preset', presetName, 'not running');
+        return typeof cb === 'function' ? cb(presetName, status) : status;
+    }
+
     var server = this.servers[presetName];
     server.proc.kill();
     delete this.servers[presetName];
-    console.log('Stopped server', server.preset.serverName, 'PID:', server.proc.pid);
     this.emit('serverstop', server);
-    if(typeof cb === 'function') {
-        cb(presetName);
-    }
+
+    console.log('Stopped server', server.preset.serverName, 'PID:', server.proc.pid);
+
+    return typeof cb === 'function' ? cb(presetName, status) : status;
 };
 
 ServerCtrl.prototype.status = function(presetName, cb) {
@@ -77,9 +90,7 @@ ServerCtrl.prototype.status = function(presetName, cb) {
         }
     }
 
-    if(typeof cb === 'function') {
-        cb(presetName, status);
-    }
+    return typeof cb === 'function' ? cb(presetName, status) : status;
 };
 
 module.exports = exports = new ServerCtrl();
