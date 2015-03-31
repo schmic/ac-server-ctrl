@@ -3,6 +3,7 @@ var path = require('path');
 var util = require('util');
 var events = require('events');
 var env = require('./env');
+var acEvents = require('./server-events');
 
 var ServerCtrl = function () {
     events.EventEmitter.call(this);
@@ -12,6 +13,7 @@ util.inherits(ServerCtrl, events.EventEmitter);
 
 ServerCtrl.prototype.servers = {};
 ServerCtrl.prototype.env = env;
+ServerCtrl.prototype.events = acEvents;
 
 ServerCtrl.prototype.start = function(presetName, cb) {
     var status = this.status(presetName);
@@ -41,7 +43,7 @@ ServerCtrl.prototype.start = function(presetName, cb) {
 
     this.servers[presetName] = server;
     console.log('Started server', server.preset.serverName, 'PID:', server.proc.pid);
-    this.emit('serverstart', server);
+    this.emit(acEvents.server.start, server);
 
     if(typeof cb === 'function') {
         cb(presetName);
@@ -59,7 +61,7 @@ ServerCtrl.prototype.stop = function(presetName, cb) {
     var server = this.servers[presetName];
     server.proc.kill();
     delete this.servers[presetName];
-    this.emit('serverstop', server);
+    this.emit(acEvents.server.stop, server);
 
     console.log('Stopped server', server.preset.serverName, 'PID:', server.proc.pid);
 

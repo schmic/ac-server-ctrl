@@ -1,3 +1,5 @@
+var acEvents = require('../server-events');
+
 var acRE = {};
 acRE.lapTime = /^LAP (.*) (\d+:\d+:\d+)$/;
 
@@ -36,11 +38,11 @@ module.exports = function (server, line, cb) {
 
         var bestLap = server.session.laptimes[driver.SID];
 
-        server.emit('lap', lap);
+        server.emit(acEvents.lap.time, lap);
 
         if (bestLap === undefined || bestLap.laptime > lap.laptime) {
             server.session.laptimes[driver.SID] = lap;
-            server.emit('bestlap', lap);
+            server.emit(acEvents.lap.best, lap);
         }
     }
 

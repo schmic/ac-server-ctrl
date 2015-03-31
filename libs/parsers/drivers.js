@@ -1,3 +1,4 @@
+var acEvents = require('../server-events');
 var acRE = {};
 
 //acRE.carEntry = /CAR_\d+\nSESSION_ID:(\d+)\nMODEL: (\w+) \(\d+\) .*\nDRIVERNAME: (.*)\nGUID:(\d+)/;
@@ -69,14 +70,14 @@ module.exports = function (server, line, cb) {
             "MODEL": matches[1]
         };
         server.session.drivers[car.SID] = car;
-        server.emit('connectcar', car);
+        server.emit(acEvents.car.connect, car);
     }
 
     else if(acRE.disconnectCar.test(bufferLines)) {
         var matches = bufferLines.match(acRE.disconnectCar);
 
         var car = server.session.drivers[matches[1]];
-        server.emit('disconnectcar', car);
+        server.emit(acEvents.car.disconnect, car);
 
         delete server.session.drivers[matches[1]];
         resetBuffer();

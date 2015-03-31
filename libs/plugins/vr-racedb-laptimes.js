@@ -1,3 +1,5 @@
+var acEvents = require('../server-events');
+
 var options = {
     "url": require('config').get('vr.racedb.url'),
     "method": "POST",
@@ -8,7 +10,7 @@ module.exports = function (server) {
     if(options.url === undefined) {
         return;
     }
-    server.on('lap', function(lap) {
+    server.on(acEvents.lap.time, function(lap) {
         if(lap.trackConfig) {
             lap.track += '-' + lap.trackConfig;
             delete lap.trackConfig;

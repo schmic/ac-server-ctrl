@@ -1,3 +1,5 @@
+var acEvents = require('../server-events');
+
 var acRE = {};
 acRE.sessionChange = /SENDING session name : (.*)\nSENDING session index : (\d+)\nSENDING session type : (\d+)\nSENDING session time : (\d+)\nSENDING session laps : (\d+)/
 acRE.sessionRaceOver = /RACE OVER PACKET, FINAL RANK/;
@@ -38,7 +40,7 @@ module.exports = function(server, line, cb) {
         server.session.dynamictrack = {
             "grip": server.preset.dynamicTrack.SESSION_START
         };
-        server.emit('dynamictrack', server.session.dynamictrack);
+        server.emit(acEvents.track.dynamic, server.session.dynamictrack);
     }
 
     if(acRE.dynamicTrackUpdate.test(line)) {
@@ -48,7 +50,7 @@ module.exports = function(server, line, cb) {
 
         var matches = line.match(acRE.dynamicTrackUpdate);
         server.session.dynamictrack.grip = parseInt(matches[3]) * 100;
-        server.emit('dynamictrack', server.session.dynamictrack);
+        server.emit(acEvents.track.dynamic, server.session.dynamictrack);
     }
 
     if(acRE.sessionChange.test(bufferLines)) {
@@ -60,7 +62,7 @@ module.exports = function(server, line, cb) {
 
         // no endsession on first session
         if(server.session.name) {
-            server.emit('endsession', server.session);
+            server.emit(acEvents.session.end, server.session);
             delete server.session.dontloopatend;
         }
 
@@ -73,7 +75,7 @@ module.exports = function(server, line, cb) {
         server.session.laptimes = {};
         server.session.track = server.preset.track;
         server.session.trackConfig = server.preset.trackConfig;
-        server.emit('nextsession', server.session);
+        server.emit(acEvents.session.next, server.session);
 
         resetBuffer();
     }
@@ -83,8 +85,8 @@ module.exports = function(server, line, cb) {
             return;
         }
         server.session.dontloopatend = true;
-        server.emit('endsession', server.session);
-        server.emit('raceover', server);
+        server.emit(acEvents.session.end, server.session);
+        server.emit(acEvents.race.end, server);
     }
 
     cb(null, line);
