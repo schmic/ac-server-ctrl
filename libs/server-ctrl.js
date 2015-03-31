@@ -39,7 +39,6 @@ ServerCtrl.prototype.start = function(presetName, cb) {
     spawnProcess(server);
     writePidFile(server);
     connectParsers(server);
-    connectPlugins(server);
 
     this.servers[presetName] = server;
     console.log('Started server', server.preset.serverName, 'PID:', server.proc.pid);
@@ -106,10 +105,6 @@ var handleExit = function(server) {
 
 var connectParsers = function(server) {
     require('./server-parsers').connect(server);
-};
-
-var connectPlugins = function(server) {
-    require('./server-plugins').connect(server);
 };
 
 var writePidFile = function(server) {
