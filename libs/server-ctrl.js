@@ -44,9 +44,7 @@ ServerCtrl.prototype.start = function(presetName, cb) {
     console.log('Started server', server.preset.serverName, 'PID:', server.proc.pid);
     this.emit(acEvents.server.start, server);
 
-    if(typeof cb === 'function') {
-        cb(presetName);
-    }
+    return typeof cb === 'function' ? cb(presetName) : presetName;
 };
 
 ServerCtrl.prototype.stop = function(presetName, cb) {
