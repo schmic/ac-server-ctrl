@@ -1,5 +1,6 @@
 module.exports = {
     server: {
+        output: 'server.output',
         start: 'server.start',
         stop: 'server.stop'
     },
