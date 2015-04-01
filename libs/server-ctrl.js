@@ -36,7 +36,7 @@ ServerCtrl.prototype.start = function(presetName, cb) {
         return;
     }
 
-    spawnProcess(server);
+    spawnProcess(server, this);
     writePidFile(server);
     connectParsers(server);
 
@@ -94,10 +94,11 @@ ServerCtrl.prototype.status = function(presetName, cb) {
 
 module.exports = exports = new ServerCtrl();
 
-var handleExit = function(server) {
+var handleExit = function(server, ctrl) {
     fs.unlink(server.pidFile, function(err) {
         if(err) return console.error(err);
-        console.log('Server process exit, removing pid file: ', server.pidFile);
+        ctrl.emit(acEvents.server.stop, server);
+        console.log('Server process exit, removing pid file:', server.pidFile);
     });
 };
 
@@ -111,7 +112,7 @@ var writePidFile = function(server) {
     });
 };
 
-var spawnProcess = function(server) {
+var spawnProcess = function(server, ctrl) {
     var exe = env.getServerExecutable();
     var args = [
         '-c', path.join(server.workPath, 'server_cfg.ini'),
@@ -122,8 +123,8 @@ var spawnProcess = function(server) {
     };
 
     var proc = require('child_process').spawn(exe, args, opts);
-    proc.on('exit', handleExit.bind(null, server));
-    proc.on('SIGINT', handleExit.bind(null, server));
-    proc.on('uncaughtException', handleExit.bind(null, server));
+    proc.on('exit', handleExit.bind(null, server, ctrl));
+    proc.on('SIGINT', handleExit.bind(null, server, ctrl));
+    proc.on('uncaughtException', handleExit.bind(null, server, ctrl));
     server.proc = proc;
 };
